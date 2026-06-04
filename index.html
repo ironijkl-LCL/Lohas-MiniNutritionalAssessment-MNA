@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>微型營養評估篩選表 (MNA®)</title>
+    <style>
+        :root {
+            --primary-color: #1a365d;
+            --secondary-color: #2b6cb0;
+            --bg-color: #f7fafc;
+            --card-bg: #ffffff;
+            --text-color: #2d3748;
+            --border-color: #e2e8f0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 5px;
+            font-size: 24px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #718096;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        /* 基本資料區塊 */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+            background: #edf2f7;
+            padding: 20px;
+            border-radius: 6px;
+        }
+
+        .info-group {
+            display: flex;
+            align-items: center;
+        }
+
+        .info-group label {
+            font-weight: bold;
+            margin-right: 10px;
+            white-space: nowrap;
+            color: var(--primary-color);
+        }
+
+        .info-group input[type="text"],
+        .info-group input[type="number"],
+        .info-group input[type="date"] {
+            width: 100%;
+            padding: 6px 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            outline: none;
+        }
+
+        .info-group .radio-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* 題目區塊 */
+        .question-card {
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.2s;
+        }
+
+        .question-card:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-color: #cbd5e0;
+        }
+
+        .question-title {
+            font-weight: bold;
+            font-size: 16px;
+            color: var(--primary-color);
+            margin-bottom: 12px;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .option-item:hover {
+            background-color: #f7fafc;
+        }
+
+        .option-item input {
+            margin-top: 5px;
+            margin-right: 10px;
+        }
+
+        /* 結果顯示區塊 */
+        .result-section {
+            margin-top: 35px;
+            padding: 25px;
+            background: #e2e8f0;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .total-score {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        #score-display {
+            font-size: 36px;
+            color: #dd6b20;
+            margin: 0 5px;
+        }
+
+        footer {
+            margin-top: 40px;
+            text-align: right;
+            font-size: 12px;
+            color: #a0aec0;
+            border-top: 1px solid var(--border-color);
+            padding-top: 10px;
+        }
+
+        @media (max-width: 600px) {
+            body { padding: 10px; }
+            .container { padding: 15px; }
+            .info-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>微型營養評估篩選表 (MNA®)</h1>
+    <div class="subtitle">Mini Nutritional Assessment</div>
+
+    <div class="info-grid">
+        <div class="info-group">
+            <label>姓名：</label>
+            <input type="text" id="name">
+        </div>
+        <div class="info-group">
+            <label>性別：</label>
+            <div class="radio-group">
+                <label><input type="radio" name="gender" value="M"> 男</label>
+                <label><input type="radio" name="gender" value="F"> 女</label>
+            </div>
+        </div>
+        <div class="info-group">
+            <label>年齡：</label>
+            <input type="number" id="age" min="0">
+        </div>
+        <div class="info-group">
+            <label>體重(kg)：</label>
+            <input type="number" id="weight" step="0.1">
+        </div>
+        <div class="info-group">
+            <label>身高(cm)：</label>
+            <input type="number" id="height_cm" step="0.1">
+        </div>
+        <div class="info-group">
+            <label>日期：</label>
+            <input type="date" id="assessment-date">
+        </div>
+    </div>
+
+    <form id="mnaForm">
+        <div class="question-card">
+            <div class="question-title">A. 過去三個月內有沒有因為食慾不振、消化問題、咀嚼或吞嚥困難而減少食量?</div>
+            <div class="options-list">
+                <label class="option-item"><input type="radio" name="qA" value="0" onclick="calculateScore()"> 0 = 食量嚴重減少</label>
+                <label class="option-item"><input type="radio" name="qA" value="1" onclick="calculateScore()"> 1 = 食量中度減少</label>
+                <label class="option-item"><input type="radio" name="qA" value="2" onclick="calculateScore()"> 2 = 食量沒有改變</label>
+            </div>
+        </div>
+
+        <div class="question-card">
+            <div class="question-title">B. 過去三個月內體重下降的情況</div>
+            <div class="options-list">
+                <label class="option-item"><input type="radio" name="qB" value="0" onclick="calculateScore()"> 0 = 體重下降大於3公斤(6.6磅)</label>
+                <label class="option-item"><input type="radio" name="qB" value="1" onclick="calculateScore()"> 1 = 不知道</label>
+                <label class="option-item"><input type="radio" name="qB" value="2" onclick="calculateScore()"> 2 = 體重下降1-3公斤(2.2-6.6磅)</label>
+                <label class="option-item"><input type="radio" name="qB" value="3" onclick="calculateScore()"> 3 = 體重沒有下降</label>
+            </div>
+        </div>
+
+        <div class="question-card">
+            <div class="question-title">C. 活動能力</div>
+            <div class="options-list">
+                <label class="option-item"><input type="radio" name="qC" value="0" onclick="calculateScore()"> 0 = 需長期臥床或坐輪椅</label>
+                <label class="option-item"><input type="radio" name="qC" value="1" onclick="calculateScore()"> 1 = 可以下床或離開輪椅，但不能外出</label>
+                <label class="option-item"><input type="radio" name="qC" value="2" onclick="calculateScore()"> 2 = 可以外出</label>
+            </div>
+        </div>
+
+        <div class="question-card">
+            <div class="question-title">D. 過去三個月內有沒有受到心理創傷或患上急性疾病?</div>
+            <div class="options-list">
+                <label class="option-item"><input type="radio" name="qD" value="0" onclick="calculateScore()"> 0 = 有</label>
+                <label class="option-item"><input type="radio" name="qD" value="2" onclick="calculateScore()"> 2 = 沒有</label>
+            </div>
+        </div>
+
+        <div class="question-card">
+            <div class="question-title">E. 精神心理問題</div>
+            <div class="options-list">
+                <label class="option-item"><input type="radio" name="qE" value="0" onclick="calculateScore()"> 0 = 嚴重痴呆或抑鬱</label>
+                <label class="option-item"><input type="radio" name="qE" value="1" onclick="calculateScore()"> 1 = 輕度痴呆</label>
+                <label class="option-item"><input type="radio" name="qE" value="2" onclick="calculateScore()"> 2 = 沒有精神心理問題</label>
+            </div>
+        </div>
+
+        <div class="question-card">
+            <div class="question-title">F1. 身體質量指數(BMI)(公斤/米², kg/m²)</div>
+            <div class="options-list">
+                <label class="option-item"><input type="radio" name="qF1" value="0" onclick="calculateScore()"> 0 = BMI低於19</label>
+                <label class="option-item"><input type="radio" name="qF1" value="1" onclick="calculateScore()"> 1 = BMI 19至低於21</label>
+                <label class="option-item"><input type="radio" name="qF1" value="2" onclick="calculateScore()"> 2 = BMI21至低於23</label>
+                <label class="option-item"><input type="radio" name="qF1" value="3" onclick="calculateScore()"> 3 = BMI 相等或大於23</label>
+            </div>
+        </div>
+
+        <div class="question-card">
+            <div class="question-title">F2. 小腿圍(CC)(公分, cm)</div>
+            <div class="options-list">
+                <label class="option-item"><input type="radio" name="qF2" value="0" onclick="calculateScore()"> 0 = CC低於31</label>
+                <label class="option-item"><input type="radio" name="qF2" value="3" onclick="calculateScore()"> 3 = CC 相等或大於31</label>
+            </div>
+        </div>
+    </form>
+
+    <div class="result-section">
+        <div class="total-score">
+            總評估分數 (A + B + C + D + E + F1 + F2) = <span id="score-display">0</span> 分
+        </div>
+    </div>
+
+    <footer>
+        &copy; Société des Produits Nestlé SA 1994, Revision 2009.<br>
+        Ref. Vellas B, Villars H, Abellan G, et al. J Nutr Health Aging 2006.
+    </footer>
+</div>
+
+<script>
+    // 自動帶入今天日期
+    document.getElementById('assessment-date').valueAsDate = new Date();
+
+    function calculateScore() {
+        const form = document.getElementById('mnaForm');
+        let total = 0;
+
+        // 定義所有獨立計分的題目欄位名稱
+        const allQuestions = ['qA', 'qB', 'qC', 'qD', 'qE', 'qF1', 'qF2'];
+
+        // 巡迴檢查每一題是否有被點選，有的話就將 value 轉成數字加總
+        allQuestions.forEach(key => {
+            const selected = form.querySelector(`input[name="${key}"]:checked`);
+            if (selected) {
+                total += parseInt(selected.value);
+            }
+        });
+
+        // 將即時計算出的總分渲染到畫面上
+        document.getElementById('score-display').innerText = total;
+    }
+</script>
+
+</body>
+</html>
