@@ -130,6 +130,28 @@
             margin-right: 10px;
         }
 
+        /* F1/F2 互斥區塊提示 */
+        .f-box {
+            background-color: #fffaf0;
+            border: 1px dashed #dd6b20;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .f-hint {
+            font-size: 13px;
+            color: #dd6b20;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .f-divider {
+            margin: 20px 0;
+            border: 0;
+            border-top: 1px dashed #e2e8f0;
+        }
+
         /* 結果顯示區塊 */
         .result-section {
             margin-top: 35px;
@@ -172,6 +194,7 @@
     <h1>微型營養評估篩選表 (MNA®)</h1>
     <div class="subtitle">Mini Nutritional Assessment</div>
 
+    <!-- 基本資料 -->
     <div class="info-grid">
         <div class="info-group">
             <label>姓名：</label>
@@ -203,6 +226,7 @@
     </div>
 
     <form id="mnaForm">
+        <!-- A. 食量變化 -->
         <div class="question-card">
             <div class="question-title">A. 過去三個月內有沒有因為食慾不振、消化問題、咀嚼或吞嚥困難而減少食量?</div>
             <div class="options-list">
@@ -212,6 +236,7 @@
             </div>
         </div>
 
+        <!-- B. 體重下降 -->
         <div class="question-card">
             <div class="question-title">B. 過去三個月內體重下降的情況</div>
             <div class="options-list">
@@ -222,6 +247,7 @@
             </div>
         </div>
 
+        <!-- C. 活動能力 -->
         <div class="question-card">
             <div class="question-title">C. 活動能力</div>
             <div class="options-list">
@@ -231,6 +257,7 @@
             </div>
         </div>
 
+        <!-- D. 急性疾病/創傷 -->
         <div class="question-card">
             <div class="question-title">D. 過去三個月內有沒有受到心理創傷或患上急性疾病?</div>
             <div class="options-list">
@@ -239,6 +266,7 @@
             </div>
         </div>
 
+        <!-- E. 精神心理問題 -->
         <div class="question-card">
             <div class="question-title">E. 精神心理問題</div>
             <div class="options-list">
@@ -248,34 +276,40 @@
             </div>
         </div>
 
-        <div class="question-card">
+        <!-- F1 與 F2 二選一區塊 -->
+        <div class="f-box">
+            <div class="f-hint">💡 註：如不能取得身體質量指數(BMI)，請以問題F2代替F1。如已完成問題F1，請不要回答問題F2。</div>
+            
+            <!-- F1 -->
             <div class="question-title">F1. 身體質量指數(BMI)(公斤/米², kg/m²)</div>
             <div class="options-list">
-                <label class="option-item"><input type="radio" name="qF1" value="0" onclick="calculateScore()"> 0 = BMI低於19</label>
-                <label class="option-item"><input type="radio" name="qF1" value="1" onclick="calculateScore()"> 1 = BMI 19至低於21</label>
-                <label class="option-item"><input type="radio" name="qF1" value="2" onclick="calculateScore()"> 2 = BMI21至低於23</label>
-                <label class="option-item"><input type="radio" name="qF1" value="3" onclick="calculateScore()"> 3 = BMI 相等或大於23</label>
+                <label class="option-item"><input type="radio" name="qF1" value="0" onclick="clearF2_and_Calc()"> 0 = BMI低於19</label>
+                <label class="option-item"><input type="radio" name="qF1" value="1" onclick="clearF2_and_Calc()"> 1 = BMI 19至低於21</label>
+                <label class="option-item"><input type="radio" name="qF1" value="2" onclick="clearF2_and_Calc()"> 2 = BMI21至低於23</label>
+                <label class="option-item"><input type="radio" name="qF1" value="3" onclick="clearF2_and_Calc()"> 3 = BMI 相等或大於23</label>
             </div>
-        </div>
 
-        <div class="question-card">
+            <hr class="f-divider">
+
+            <!-- F2 -->
             <div class="question-title">F2. 小腿圍(CC)(公分, cm)</div>
             <div class="options-list">
-                <label class="option-item"><input type="radio" name="qF2" value="0" onclick="calculateScore()"> 0 = CC低於31</label>
-                <label class="option-item"><input type="radio" name="qF2" value="3" onclick="calculateScore()"> 3 = CC 相等或大於31</label>
+                <label class="option-item"><input type="radio" name="qF2" value="0" onclick="clearF1_and_Calc()"> 0 = CC低於31</label>
+                <label class="option-item"><input type="radio" name="qF2" value="3" onclick="clearF1_and_Calc()"> 3 = CC 相等或大於31</label>
             </div>
         </div>
     </form>
 
+    <!-- 總分顯示 -->
     <div class="result-section">
         <div class="total-score">
-            總評估分數 (A + B + C + D + E + F1 + F2) = <span id="score-display">0</span> 分
+            總評估分數 (A + B + C + D + E + [F1 或 F2]) = <span id="score-display">0</span> 分
         </div>
     </div>
 
     <footer>
         &copy; Société des Produits Nestlé SA 1994, Revision 2009.<br>
-        Ref. Vellas B, Villars H, Abellan G, et al. J Nutr Health Aging 2006.
+        Ref. mna-mini-chinese.pdf
     </footer>
 </div>
 
@@ -283,22 +317,44 @@
     // 自動帶入今天日期
     document.getElementById('assessment-date').valueAsDate = new Date();
 
+    // 當選取了 F1，就清空 F2 的選取狀態，然後重新計分
+    function clearF2_and_Calc() {
+        const f2Options = document.getElementsByName('qF2');
+        f2Options.forEach(radio => radio.checked = false);
+        calculateScore();
+    }
+
+    // 當選取了 F2，就清空 F1 的選取狀態，然後重新計分
+    function clearF1_and_Calc() {
+        const f1Options = document.getElementsByName('qF1');
+        f1Options.forEach(radio => radio.checked = false);
+        calculateScore();
+    }
+
     function calculateScore() {
         const form = document.getElementById('mnaForm');
         let total = 0;
 
-        // 定義所有獨立計分的題目欄位名稱
-        const allQuestions = ['qA', 'qB', 'qC', 'qD', 'qE', 'qF1', 'qF2'];
-
-        // 巡迴檢查每一題是否有被點選，有的話就將 value 轉成數字加總
-        allQuestions.forEach(key => {
+        // 基礎必填項 (A, B, C, D, E)
+        const baseQuestions = ['qA', 'qB', 'qC', 'qD', 'qE'];
+        baseQuestions.forEach(key => {
             const selected = form.querySelector(`input[name="${key}"]:checked`);
             if (selected) {
                 total += parseInt(selected.value);
             }
         });
 
-        // 將即時計算出的總分渲染到畫面上
+        // 二選一項 (F1 或 F2)
+        const selectedF1 = form.querySelector(`input[name="qF1"]:checked`);
+        const selectedF2 = form.querySelector(`input[name="qF2"]:checked`);
+
+        if (selectedF1) {
+            total += parseInt(selectedF1.value);
+        } else if (selectedF2) {
+            total += parseInt(selectedF2.value);
+        }
+
+        // 渲染結果總分
         document.getElementById('score-display').innerText = total;
     }
 </script>
