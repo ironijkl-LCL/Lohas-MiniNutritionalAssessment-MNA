@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>微型營養評估篩選表 (MNA®)</title>
+    <title>綜合評估表：MNA-SF & Sarcopenic Dysphagia Screening</title>
     <style>
         :root {
             --primary-color: #1a365d;
             --secondary-color: #2b6cb0;
+            --accent-color: #319795;
             --bg-color: #f7fafc;
             --card-bg: #ffffff;
             --text-color: #2d3748;
@@ -24,7 +25,7 @@
         }
 
         .container {
-            max-width: 800px;
+            max-width: 850px;
             margin: 0 auto;
             background: var(--card-bg);
             padding: 30px;
@@ -44,6 +45,20 @@
             color: #718096;
             margin-bottom: 30px;
             font-size: 14px;
+        }
+
+        .section-title {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 15px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 4px;
+            margin: 30px 0 20px 0;
+        }
+
+        .section-title.part2 {
+            background-color: var(--accent-color);
         }
 
         /* 基本資料區塊 */
@@ -152,24 +167,47 @@
             border-top: 1px dashed #e2e8f0;
         }
 
-        /* 結果顯示區塊 */
+        /* 總分顯示與連動欄位 */
         .result-section {
-            margin-top: 35px;
-            padding: 25px;
+            margin: 20px 0;
+            padding: 20px;
             background: #e2e8f0;
             border-radius: 8px;
             text-align: center;
-        }
-
-        .total-score {
-            font-size: 24px;
+            font-size: 20px;
             font-weight: bold;
         }
 
         #score-display {
-            font-size: 36px;
+            font-size: 30px;
             color: #dd6b20;
             margin: 0 5px;
+        }
+
+        .linked-field-box {
+            background-color: #e6fffa;
+            border: 2px solid var(--accent-color);
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .linked-field-box span.title {
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+
+        .linked-score {
+            font-size: 24px;
+            font-weight: bold;
+            color: #e53e3e;
+            background: white;
+            padding: 2px 15px;
+            border-radius: 4px;
+            border: 1px solid var(--accent-color);
         }
 
         footer {
@@ -191,15 +229,12 @@
 <body>
 
 <div class="container">
-    <h1>微型營養評估篩選表 (MNA®)</h1>
-    <div class="subtitle">Mini Nutritional Assessment</div>
+    <h1>臨床綜合評估系統</h1>
+    <div class="subtitle">微型營養評估 (MNA-SF) & 肌少症吞嚥困難篩查 (Version 1.11)</div>
 
-    <!-- 基本資料 -->
+    <!-- 個案基本資料 -->
     <div class="info-grid">
-        <div class="info-group">
-            <label>姓名：</label>
-            <input type="text" id="name">
-        </div>
+        <div class="info-group"><label>姓名：</label><input type="text" id="name"></div>
         <div class="info-group">
             <label>性別：</label>
             <div class="radio-group">
@@ -207,25 +242,16 @@
                 <label><input type="radio" name="gender" value="F"> 女</label>
             </div>
         </div>
-        <div class="info-group">
-            <label>年齡：</label>
-            <input type="number" id="age" min="0">
-        </div>
-        <div class="info-group">
-            <label>體重(kg)：</label>
-            <input type="number" id="weight" step="0.1">
-        </div>
-        <div class="info-group">
-            <label>身高(cm)：</label>
-            <input type="number" id="height_cm" step="0.1">
-        </div>
-        <div class="info-group">
-            <label>日期：</label>
-            <input type="date" id="assessment-date">
-        </div>
+        <div class="info-group"><label>年齡：</label><input type="number" id="age" min="0"></div>
+        <div class="info-group"><label>體重(kg)：</label><input type="number" id="weight" step="0.1"></div>
+        <div class="info-group"><label>身高(cm)：</label><input type="number" id="height_cm" step="0.1"></div>
+        <div class="info-group"><label>日期：</label><input type="date" id="assessment-date"></div>
     </div>
 
     <form id="mnaForm">
+        <!-- ==================== PART 1 ==================== -->
+        <div class="section-title">第一部分：微型營養評估簡短版 (MNA-SF)[cite: 1]</div>
+
         <!-- A. 食量變化 -->
         <div class="question-card">
             <div class="question-title">A. 過去三個月內有沒有因為食慾不振、消化問題、咀嚼或吞嚥困難而減少食量?</div>
@@ -276,11 +302,9 @@
             </div>
         </div>
 
-        <!-- F1 與 F2 二選一區塊 -->
+        <!-- F1 與 F2 二選一 -->
         <div class="f-box">
             <div class="f-hint">💡 註：如不能取得身體質量指數(BMI)，請以問題F2代替F1。如已完成問題F1，請不要回答問題F2。</div>
-            
-            <!-- F1 -->
             <div class="question-title">F1. 身體質量指數(BMI)(公斤/米², kg/m²)</div>
             <div class="options-list">
                 <label class="option-item"><input type="radio" name="qF1" value="0" onclick="clearF2_and_Calc()"> 0 = BMI低於19</label>
@@ -288,43 +312,51 @@
                 <label class="option-item"><input type="radio" name="qF1" value="2" onclick="clearF2_and_Calc()"> 2 = BMI21至低於23</label>
                 <label class="option-item"><input type="radio" name="qF1" value="3" onclick="clearF2_and_Calc()"> 3 = BMI 相等或大於23</label>
             </div>
-
             <hr class="f-divider">
-
-            <!-- F2 -->
             <div class="question-title">F2. 小腿圍(CC)(公分, cm)</div>
             <div class="options-list">
                 <label class="option-item"><input type="radio" name="qF2" value="0" onclick="clearF1_and_Calc()"> 0 = CC低於31</label>
                 <label class="option-item"><input type="radio" name="qF2" value="3" onclick="clearF1_and_Calc()"> 3 = CC 相等或大於31</label>
             </div>
         </div>
+
+        <div class="result-section">
+            MNA-SF 篩選總分數：<span id="score-display">0</span> / 14 分
+        </div>
+
+        <!-- ==================== PART 2 ==================== -->
+        <div class="section-title part2">第二部分：Sarcopenic Dysphagia Screening Form 1.11</div>
+
+        <!-- 自動連動與顯示欄位 -->
+        <div class="linked-field-box">
+            <span class="title">🔗 來自第一部分的連動數據：MNA-SF 營養篩查分數</span>
+            <span class="linked-score" id="part2-mna-link">0</span>
+        </div>
+
+        <!-- 這裡預留肌少症吞嚥困難篩查表 1.11 的後續其他評估題目欄位 -->
+        <div class="question-card" style="background-color: #f7fafc; border-style: dashed;">
+            <div class="question-title" style="color: var(--accent-color);">[ 篩查表 1.11 其他評估指標指標項目 ]</div>
+            <p style="font-size: 14px; color: #4a5568; margin: 0;">
+                （此處可根據您的 1.11 版本表格標準，自由加入如：吞嚥困難問卷 EAT-10 得分、肌少症篩查 SARC-F 得分、或是肌肉質量/握力等後續臨床評核指標項目。）
+            </p>
+        </div>
     </form>
 
-    <!-- 總分顯示 -->
-    <div class="result-section">
-        <div class="total-score">
-            總評估分數 (A + B + C + D + E + [F1 或 F2]) = <span id="score-display">0</span> 分
-        </div>
-    </div>
-
     <footer>
-        &copy; Société des Produits Nestlé SA 1994, Revision 2009.<br>
-        Ref. mna-mini-chinese.pdf
+        系統整合：MNA-SF & Sarcopenic Dysphagia Screening Form 1.11 連動模組<br>
+        &copy; Société des Produits Nestlé SA / Clinical Screening Integration.
     </footer>
 </div>
 
 <script>
-    // 自動帶入今天日期
     document.getElementById('assessment-date').valueAsDate = new Date();
 
-    // 當選取了 F1，就清空 F2 的選取狀態，然後重新計分
     function clearF2_and_Calc() {
         const f2Options = document.getElementsByName('qF2');
         f2Options.forEach(radio => radio.checked = false);
         calculateScore();
     }
 
-    // 當選取了 F2，就清空 F1 的選取狀態，然後重新計分
     function clearF1_and_Calc() {
         const f1Options = document.getElementsByName('qF1');
         f1Options.forEach(radio => radio.checked = false);
@@ -335,7 +367,7 @@
         const form = document.getElementById('mnaForm');
         let total = 0;
 
-        // 基礎必填項 (A, B, C, D, E)
+        // 計算 A 到 E
         const baseQuestions = ['qA', 'qB', 'qC', 'qD', 'qE'];
         baseQuestions.forEach(key => {
             const selected = form.querySelector(`input[name="${key}"]:checked`);
@@ -344,7 +376,7 @@
             }
         });
 
-        // 二選一項 (F1 或 F2)
+        // 計算 F1 或 F2
         const selectedF1 = form.querySelector(`input[name="qF1"]:checked`);
         const selectedF2 = form.querySelector(`input[name="qF2"]:checked`);
 
@@ -354,8 +386,11 @@
             total += parseInt(selectedF2.value);
         }
 
-        // 渲染結果總分
+        // 1. 更新第一部分的總分顯示
         document.getElementById('score-display').innerText = total;
+
+        // 2. 🔥 【關鍵連動】自動把分數塞進第二部分的對應欄位中
+        document.getElementById('part2-mna-link').innerText = total;
     }
 </script>
 
